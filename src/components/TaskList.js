@@ -1,4 +1,4 @@
-import { Text, HStack, VStack, Image, Box, StackDivider } from '@chakra-ui/react';
+import { Text, HStack, VStack, Image, Box, StackDivider, Skeleton } from '@chakra-ui/react';
 import ClearTask from './ClearTask';
 import DeleteTask from './DeleteTask';
 import img from '../images/empty.svg';
@@ -13,16 +13,23 @@ export default function TaskList() {
     // const { data: tasks, error, fetching } = result;
 
     const [tasks, setTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     async function fetchData() {
-        let { data: tasks, error } = await supabase.from('todos').select('*')
-        if (error) {
+        try {
+            let { data: tasks, error } = await supabase.from('todos').select('*')
+            if (error) {
+                console.error('Error fetching tasks:', error);
+            } else {
+                setTasks(tasks);
+            }
+        } catch (error) {
             console.error('Error fetching tasks:', error);
-        } else {
-            setTasks(tasks);
+        } finally {
+            setIsLoading(false);
         }
         console.log(tasks);
-    }
+    };
 
     // useEffect(() => {
     //   fetchData();
@@ -69,6 +76,15 @@ export default function TaskList() {
         }
     }, [])
     
+    if (isLoading) {
+        return (
+            <Skeleton
+                width={{ base: '90vw', sm: '80vw', lg: '50vw', xl: '30vw' }}
+                height="300px"
+                rounded="md"
+            />
+        );
+    }
     
     if (!tasks || !tasks.length) {
         return (

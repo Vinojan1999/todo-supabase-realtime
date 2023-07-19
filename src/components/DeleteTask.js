@@ -10,7 +10,10 @@ export default function DeleteTask({ id }) {
 
   async function handleDelete() {
     setLoading(false);
-    const { error } = await supabase.from('todos').delete().eq('id', id)
+    const { error } = await supabase
+      .from('todos')
+      .delete()
+      .eq('id', id)
     setLoading(true);
 
     toast({
